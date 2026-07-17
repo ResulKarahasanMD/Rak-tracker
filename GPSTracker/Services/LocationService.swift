@@ -175,9 +175,9 @@ extension LocationService: CLLocationManagerDelegate {
 
     nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         MainActor.assumeIsolated {
-            authorizationStatus = manager.authorizationStatus
+            authorizationStatus = self.manager.authorizationStatus
             if isRecording {
-                manager.allowsBackgroundLocationUpdates = isAuthorized
+                self.manager.allowsBackgroundLocationUpdates = isAuthorized
             }
             onAuthorizationChange?(authorizationStatus)
         }
