@@ -15,9 +15,10 @@ Akış: `RecordingCoordinator` (@MainActor, @Observable) → `LocationService` /
 
 ## Komutlar
 ```bash
-cd TrackerKit && swift test      # saf mantık — 61 test
+(cd TrackerKit && swift test)    # saf mantık — 61 test; alt kabuk, kök dizinde kalınır
 xcodebuild build -project GPSTracker.xcodeproj -scheme GPSTracker -configuration Debug \
-  -destination 'generic/platform=iOS' -derivedDataPath <scratch>/DerivedData CODE_SIGNING_ALLOWED=NO
+  -destination 'generic/platform=iOS' -derivedDataPath "${TMPDIR:-/tmp}/GPSTracker-DerivedData" \
+  CODE_SIGNING_ALLOWED=NO
 ```
 
 App hedefi Xcode 27.0 ile derleniyor (2026-09-30: `BUILD SUCCEEDED`, ~23 sn, 0 derleyici uyarısı). Simülatör runtime'ı kurulu değil, bu yüzden hedef `generic/platform=iOS` ve imzasız; çalıştırma/davranış testi gerçek cihaz ister (README'deki kontrol listesi). GRDB paketinin ilk çözümü ağ ister (sandbox dışı).
