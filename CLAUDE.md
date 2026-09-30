@@ -15,10 +15,12 @@ Akış: `RecordingCoordinator` (@MainActor, @Observable) → `LocationService` /
 
 ## Komutlar
 ```bash
-cd TrackerKit && swift test      # saf mantık — Xcode gerektirmez, CLT ile çalışır
+cd TrackerKit && swift test      # saf mantık — 61 test
+xcodebuild build -project GPSTracker.xcodeproj -scheme GPSTracker -configuration Debug \
+  -destination 'generic/platform=iOS' -derivedDataPath <scratch>/DerivedData CODE_SIGNING_ALLOWED=NO
 ```
 
-App hedefi Xcode ister; bu makinede Xcode bozuk. Mantık değişikliğini `TrackerKit` testleriyle doğrula, `xcodebuild`'e uzanma.
+App hedefi Xcode 27.0 ile derleniyor (2026-09-30: `BUILD SUCCEEDED`, ~23 sn, 0 derleyici uyarısı). Simülatör runtime'ı kurulu değil, bu yüzden hedef `generic/platform=iOS` ve imzasız; çalıştırma/davranış testi gerçek cihaz ister (README'deki kontrol listesi). GRDB paketinin ilk çözümü ağ ister (sandbox dışı).
 
 ## Dikkat
 - **Sıfır ağ isteği, analitik yok, hesap yok, senkronizasyon yok.** Bu ürün kararı. Ağ çağrısı, SDK, telemetri, crash reporter ekleme — sorulmadan asla.
