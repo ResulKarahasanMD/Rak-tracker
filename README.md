@@ -125,3 +125,7 @@ These acceptance criteria require real hardware:
 - `CMMotionActivityManager` only reports *changes*; a 60 s timer re-feeds the
   last evidence so the stationary debounce can elapse. If motion data is
   denied, a 5-minute no-fix fallback still turns GPS off when parked.
+
+## License
+
+[MIT](LICENSE)
