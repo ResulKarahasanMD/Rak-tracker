@@ -1,30 +1,30 @@
 # CLAUDE.md — Rak-tracker (GPSTracker)
 
-## Ne bu
-iOS 18+ / Swift 6 / SwiftUI, **tamamen çevrimdışı** GPS kayıt uygulaması. Ayrıntılı mimari `README.md`'de.
+## What this is
+iOS 18+ / Swift 6 / SwiftUI, **fully offline** GPS recording app. The detailed architecture is in `README.md`.
 
-| Yol | İş |
+| Path | Purpose |
 |---|---|
-| `GPSTracker.xcodeproj` | iOS app projesi (iPhone, Swift 6 dil kipi) |
+| `GPSTracker.xcodeproj` | iOS app project (iPhone, Swift 6 language mode) |
 | `GPSTracker/` | App: `Services`, `Persistence`, `UI`, `App`, `Resources` |
-| `TrackerKit/` | Yerel Swift paketi — saf mantık: sabit-nokta codec'leri, Douglas-Peucker, GPX/GeoJSON/CSV dışa aktarım, SQL şeması, enerji politikası durum makinesi |
+| `TrackerKit/` | Local Swift package — pure logic: fixed-point codecs, Douglas-Peucker, GPX/GeoJSON/CSV export, SQL schema, energy-policy state machine |
 
-Bağımlılık: GRDB.swift (SPM) + yerel `TrackerKit`. Başka hiçbir şey.
+Dependencies: GRDB.swift (SPM) + local `TrackerKit`. Nothing else.
 
-Akış: `RecordingCoordinator` (@MainActor, @Observable) → `LocationService` / `CMMotionActivity` / `EnergyPolicy` → `PersistenceStore` (actor, GRDB, WAL, toplu yazma) → `ExportEngine`.
+Flow: `RecordingCoordinator` (@MainActor, @Observable) → `LocationService` / `CMMotionActivity` / `EnergyPolicy` → `PersistenceStore` (actor, GRDB, WAL, batched writes) → `ExportEngine`.
 
-## Komutlar
+## Commands
 ```bash
-(cd TrackerKit && swift test)    # saf mantık — 61 test; alt kabuk, kök dizinde kalınır
+(cd TrackerKit && swift test)    # pure logic — 61 tests; subshell, so you stay in the repo root
 xcodebuild build -project GPSTracker.xcodeproj -scheme GPSTracker -configuration Debug \
   -destination 'generic/platform=iOS' -derivedDataPath "${TMPDIR:-/tmp}/GPSTracker-DerivedData" \
   CODE_SIGNING_ALLOWED=NO
 ```
 
-App hedefi Xcode 27.0 ile derleniyor (2026-09-30: `BUILD SUCCEEDED`, ~23 sn, 0 derleyici uyarısı). Simülatör runtime'ı kurulu değil, bu yüzden hedef `generic/platform=iOS` ve imzasız; çalıştırma/davranış testi gerçek cihaz ister (README'deki kontrol listesi). GRDB paketinin ilk çözümü ağ ister (sandbox dışı).
+The app target builds with Xcode 27.0 (2026-09-30: `BUILD SUCCEEDED`, ~23 s, 0 compiler warnings). The simulator runtime is not installed, so the destination is `generic/platform=iOS` and the build is unsigned; running it and testing its behavior require a real device (see the checklist in the README). Resolving the GRDB package for the first time needs network access (outside the sandbox).
 
-## Dikkat
-- **Sıfır ağ isteği, analitik yok, hesap yok, senkronizasyon yok.** Bu ürün kararı. Ağ çağrısı, SDK, telemetri, crash reporter ekleme — sorulmadan asla.
-- Konum verisi kişiseldir: örnek koordinat/iz çıktısını rapora veya artifact'e koyma.
-- Yeni saf mantık `TrackerKit`'e gider (Apple'a özgü API kullanmaz, Linux'ta da test edilebilir); yalnız iOS API'si gereken kod `GPSTracker/`'a.
-- Uzak `ResulKarahasanMD/Rak-tracker`, aktif dal `RAK-MD`. İzinsiz commit/push yok.
+## Important
+- **Zero network requests, no analytics, no accounts, no sync.** This is a product decision. Never add a network call, SDK, telemetry, or crash reporter without asking.
+- Location data is personal: don't put sample coordinate/track output in reports or artifacts.
+- New pure logic goes into `TrackerKit` (it uses no Apple-specific APIs and can be tested on Linux too); only code that needs iOS APIs goes into `GPSTracker/`.
+- Remote: `ResulKarahasanMD/Rak-tracker`; active branch: `RAK-MD`. No commits or pushes without permission.
